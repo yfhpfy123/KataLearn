@@ -22,13 +22,12 @@ public class UserDaoJDBCImpl implements UserDao {
                   Id BIGINT NOT NULL AUTO_INCREMENT,
                   Name CHAR(45) NOT NULL,
                   LastName CHAR(45) NOT NULL,
-                  Age BINARY(1) NOT NULL,
+                  Age INT(3) NOT NULL,
                   PRIMARY KEY (Id))
                 ENGINE = InnoDB
                 DEFAULT CHARACTER SET = utf8;""";
         try (Statement statement = Util.getConnect().createStatement()) {
             statement.execute(sql);
-            System.out.println("User table created");
         } catch (SQLException e) {
             dropUsersTable();
             createUsersTable();
@@ -39,7 +38,6 @@ public class UserDaoJDBCImpl implements UserDao {
         String sql = "DROP TABLE new_schema.users";
         try (Statement statement = Util.getConnect().createStatement()) {
             statement.execute(sql);
-            System.out.println("User table dropped");
         } catch (SQLException e) {
             createUsersTable();
             dropUsersTable();
@@ -54,7 +52,7 @@ public class UserDaoJDBCImpl implements UserDao {
             pstm.setByte(3, age);
 
             int insert = pstm.executeUpdate();
-            System.out.printf("insert %d: %s %s - %d years\n", insert, name, lastName, age);
+            System.out.printf("%d User с именем - %s добавлен в базу данных\n", insert, name);
         }
     }
 
@@ -63,8 +61,7 @@ public class UserDaoJDBCImpl implements UserDao {
         try (PreparedStatement pstm = Util.getConnect().prepareStatement(sql)) {
             pstm.setLong(1, id);
 
-            int remove = pstm.executeUpdate();
-            System.out.printf("remove: %d users from id = %d\n", remove, id);
+            pstm.executeUpdate();
         }
     }
 
@@ -83,8 +80,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void cleanUsersTable() throws SQLException {
         String sql = "DELETE FROM new_schema.users";
         try (Statement statement = Util.getConnect().createStatement()) {
-            int delete = statement.executeUpdate(sql);
-            System.out.printf("delete: %d users\n", delete);
+            statement.executeUpdate(sql);
         }
     }
 }
