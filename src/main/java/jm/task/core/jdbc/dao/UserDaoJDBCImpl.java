@@ -16,9 +16,9 @@ public class UserDaoJDBCImpl implements UserDao {
 
     }
 
-    public void createUsersTable() throws SQLException {
+    public void createUsersTable() {
         String sql = """
-                CREATE TABLE new_schema.users (
+                CREATE TABLE IF NOT EXISTS new_schema.users (
                   Id BIGINT NOT NULL AUTO_INCREMENT,
                   Name CHAR(45) NOT NULL,
                   LastName CHAR(45) NOT NULL,
@@ -29,18 +29,16 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Statement statement = Util.getConnect().createStatement()) {
             statement.execute(sql);
         } catch (SQLException e) {
-            dropUsersTable();
-            createUsersTable();
+            e.printStackTrace();
         }
     }
 
-    public void dropUsersTable() throws SQLException {
+    public void dropUsersTable() {
         String sql = "DROP TABLE new_schema.users";
         try (Statement statement = Util.getConnect().createStatement()) {
             statement.execute(sql);
         } catch (SQLException e) {
-            createUsersTable();
-            dropUsersTable();
+            e.printStackTrace();
         }
     }
 
@@ -53,19 +51,23 @@ public class UserDaoJDBCImpl implements UserDao {
 
             int insert = pstm.executeUpdate();
             System.out.printf("%d User с именем - %s добавлен в базу данных\n", insert, name);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    public void removeUserById(long id) throws SQLException {
+    public void removeUserById(long id) {
         String sql = "DELETE FROM new_schema.users WHERE Id = ?";
         try (PreparedStatement pstm = Util.getConnect().prepareStatement(sql)) {
             pstm.setLong(1, id);
 
             pstm.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    public List<User> getAllUsers() throws SQLException {
+    public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
         String sql = "SELECT * FROM new_schema.users";
         try (PreparedStatement pstm = Util.getConnect().prepareStatement(sql)) {
@@ -74,13 +76,18 @@ public class UserDaoJDBCImpl implements UserDao {
                 userList.add(new User(rs.getString("Name"), rs.getString("LastName"), (byte) rs.getInt("Age")));
             }
             return userList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
-    public void cleanUsersTable() throws SQLException {
+    public void cleanUsersTable() {
         String sql = "DELETE FROM new_schema.users";
         try (Statement statement = Util.getConnect().createStatement()) {
             statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
