@@ -17,8 +17,11 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
+        String sqlCheck = """
+                SELECT EXISTS(SELECT * FROM new_schema.users) AS table_exists;
+                """;
         String sql = """
-                CREATE TABLE IF NOT EXISTS new_schema.users (
+                CREATE TABLE new_schema.users (
                   Id BIGINT NOT NULL AUTO_INCREMENT,
                   Name CHAR(45) NOT NULL,
                   LastName CHAR(45) NOT NULL,
@@ -26,11 +29,22 @@ public class UserDaoJDBCImpl implements UserDao {
                   PRIMARY KEY (Id))
                 ENGINE = InnoDB
                 DEFAULT CHARACTER SET = utf8;""";
+
         try (Statement statement = Util.getConnect().createStatement()) {
-            statement.execute(sql);
+            boolean rs = statement.execute(sqlCheck);
+            if (rs == true) {
+                val = 1;
+                System.out.println("Таблица уже существует");
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            try (Statement statement = Util.getConnect().createStatement()) {
+                statement.execute(sql);
+                System.out.println("Таблица создана");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
+
     }
 
     public void dropUsersTable() {
