@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         // реализуйте алгоритм здесь
         UserDao userDao = new UserDaoJDBCImpl();
 
@@ -20,8 +20,14 @@ public class Main {
         userDao.saveUser("Коля", "Колин", (byte) 25);
         userDao.saveUser("Женя", "Женин", (byte) 18);
 
+
+        userDao.removeUserById(2);
         System.out.println(userDao.getAllUsers());
         userDao.cleanUsersTable();
+
+
         userDao.dropUsersTable();
+
+
     }
 }

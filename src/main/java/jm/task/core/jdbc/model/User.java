@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
 @Table
 public class User {
     @Id
@@ -64,4 +65,5 @@ public class User {
     public String toString() {
         return String.format("User: %s %s (%d лет)", name, lastName, age);
     }
+
 }
