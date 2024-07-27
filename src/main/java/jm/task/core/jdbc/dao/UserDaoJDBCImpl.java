@@ -19,12 +19,12 @@ public class UserDaoJDBCImpl implements UserDao {
     @Override
     public void createUsersTable() {
         String sql = """
-                CREATE TABLE new_schema.users (
-                  Id BIGINT NOT NULL AUTO_INCREMENT,
+                CREATE TABLE new_schema.Users (
+                  ID BIGINT NOT NULL AUTO_INCREMENT,
                   Name CHAR(45) NOT NULL,
                   LastName CHAR(45) NOT NULL,
                   Age INT(3) NOT NULL,
-                  PRIMARY KEY (Id))
+                  PRIMARY KEY (ID))
                 ENGINE = InnoDB
                 DEFAULT CHARACTER SET = utf8;""";
 
@@ -45,7 +45,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     @Override
     public void dropUsersTable() {
-        String sql = "DROP TABLE new_schema.users";
+        String sql = "DROP TABLE new_schema.Users";
 
         if (checkTable()) {
             try (Statement statement = Util.getConnect().createStatement()) {
@@ -61,7 +61,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        String sql = "INSERT INTO new_schema.users(name, lastName, age) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO new_schema.Users(name, lastName, age) VALUES (?, ?, ?)";
 
         if (checkTable()) {
             try (PreparedStatement pstm = Util.getConnect().prepareStatement(sql)) {
@@ -69,8 +69,8 @@ public class UserDaoJDBCImpl implements UserDao {
                 pstm.setString(2, lastName);
                 pstm.setByte(3, age);
 
-                int insert = pstm.executeUpdate();
-                System.out.printf("%d User с именем - %s добавлен в базу данных\n", insert, name);
+                pstm.executeUpdate();
+                System.out.printf("User с именем - %s добавлен в базу данных\n", name);
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -85,12 +85,13 @@ public class UserDaoJDBCImpl implements UserDao {
 
     @Override
     public void removeUserById(long id) {
-        String sql = "DELETE FROM new_schema.users WHERE Id = ?";
+        String sql = "DELETE FROM new_schema.Users WHERE Id = ?";
 
         if (checkTable()) {
             try (PreparedStatement pstm = Util.getConnect().prepareStatement(sql)) {
                 pstm.setLong(1, id);
                 pstm.executeUpdate();
+                System.out.printf("Пользователь с ID = %d удален\n", id);
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -105,7 +106,7 @@ public class UserDaoJDBCImpl implements UserDao {
     @Override
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-        String sql = "SELECT * FROM new_schema.users";
+        String sql = "SELECT * FROM new_schema.Users";
 
         if (checkTable()) {
             try (PreparedStatement pstm = Util.getConnect().prepareStatement(sql)) {
@@ -139,11 +140,12 @@ public class UserDaoJDBCImpl implements UserDao {
 
     @Override
     public void cleanUsersTable() {
-        String sql = "DELETE FROM new_schema.users";
+        String sql = "DELETE FROM new_schema.Users";
 
         if (checkTable()) {
             try (Statement statement = Util.getConnect().createStatement()) {
                 statement.executeUpdate(sql);
+                System.out.println("Все пользователи удалены");
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -157,7 +159,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     @Override
     public boolean checkTable() {
-        String sqlCheck = "SELECT EXISTS(SELECT * FROM new_schema.users) AS table_exists;";
+        String sqlCheck = "SELECT EXISTS(SELECT * FROM new_schema.Users) AS table_exists;";
 
         try (Statement statement = Util.getConnect().createStatement()) {
             statement.execute(sqlCheck);

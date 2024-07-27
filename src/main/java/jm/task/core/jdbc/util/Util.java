@@ -1,10 +1,16 @@
 package jm.task.core.jdbc.util;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+//import java.io.FileInputStream;
+//import java.io.IOException;
+//import java.io.InputStream;
+import jm.task.core.jdbc.model.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
 import java.sql.*;
-import java.util.Properties;
+//import java.util.Properties;
 
 public class Util {
     // реализуйте настройку соеденения с БД
@@ -15,22 +21,31 @@ public class Util {
 //    private static String user = null;
 //    private static String pswd = null;
 
-    public static Connection getConnect() throws SQLException {
+    public static Session getSession() {
+        Configuration config = new Configuration().addAnnotatedClass(User.class);
+
+        SessionFactory ssf = config.buildSessionFactory();
+        return ssf.getCurrentSession();
+    }
+
+    public static Connection getConnect() {
         Connection connection;
-        Properties properties = new Properties(); // Возможность менять базу данных
+//        Properties properties = new Properties(); // Возможность менять базу данных
 
 //      Читаем properties и устанавливаем соединение
-        try (InputStream input = new FileInputStream("src/main/java/jm/task/core/jdbc/util/sql.properties")){
-            properties.load(input);
-
-//            url = properties.getProperty("database.url");
-//            user = properties.getProperty("database.login");
-//            pswd = properties.getProperty("database.pass");
-
+        try {
             connection = DriverManager.getConnection(url, user, pswd);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+//            InputStream input = new FileInputStream("src/main/java/jm/task/core/jdbc/util/Hibernate.properties");
+//            properties.load(input);
+
+//            url = properties.getProperty("hibernate.connection.url");
+//            user = properties.getProperty("hibernate.connection.username");
+//            pswd = properties.getProperty("hibernate.connection.password");
+
+            return connection;
+        } catch (SQLException e) {
+            System.out.println("Не удалось установить подключение к базе данных");
+            return null;
         }
-        return connection;
     }
 }
