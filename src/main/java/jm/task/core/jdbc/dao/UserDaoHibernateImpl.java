@@ -128,7 +128,7 @@ public class UserDaoHibernateImpl implements UserDao {
                 ss.createQuery("DELETE FROM User");
 
                 ss.getTransaction().commit();
-                System.out.println("Все пользователи удалены");
+                System.out.println("Все пользователи удалены.");
             } finally {
                 ss.close();
             }
