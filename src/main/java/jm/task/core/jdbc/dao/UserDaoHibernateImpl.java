@@ -52,7 +52,7 @@ public class UserDaoHibernateImpl implements UserDao {
                 ss.close();
             }
         } else {
-            System.out.println("Таблица еще не создавалась");
+            System.out.println("Таблица еще не создавалась.");
         }
     }
 
