@@ -16,14 +16,44 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
-        UserDaoJDBCImpl create = new UserDaoJDBCImpl();
-        create.createUsersTable();
+        Session ss = Util.getSession();
+        try {
+            ss.beginTransaction();
+
+            ss.createSQLQuery("""
+                CREATE TABLE IF NOT EXISTS new_schema.Users (
+                  ID BIGINT NOT NULL AUTO_INCREMENT,
+                  Name CHAR(45) NOT NULL,
+                  LastName CHAR(45) NOT NULL,
+                  Age INT(3) NOT NULL,
+                  PRIMARY KEY (ID))
+                ENGINE = InnoDB
+                DEFAULT CHARACTER SET = utf8;""").executeUpdate();
+
+            ss.getTransaction().commit();
+            System.out.println("Таблица создана");
+        } finally {
+            ss.close();
+        }
     }
 
     @Override
     public void dropUsersTable() {
-        UserDaoJDBCImpl drop = new UserDaoJDBCImpl();
-        drop.dropUsersTable();
+        if (checkTable()) {
+            Session ss = Util.getSession();
+            try {
+                ss.beginTransaction();
+
+                ss.createSQLQuery("DROP TABLE new_schema.Users").executeUpdate();
+
+                ss.getTransaction().commit();
+                System.out.println("Таблица удалена");
+            } finally {
+                ss.close();
+            }
+        } else {
+            System.out.println("Таблица еще не создавалась");
+        }
     }
 
     @Override
