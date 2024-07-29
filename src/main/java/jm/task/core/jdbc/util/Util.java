@@ -3,6 +3,7 @@ package jm.task.core.jdbc.util;
 //import java.io.FileInputStream;
 //import java.io.IOException;
 //import java.io.InputStream;
+import com.mysql.cj.jdbc.ConnectionImpl;
 import org.hibernate.Session;
 
 import java.sql.*;
@@ -17,23 +18,20 @@ public class Util {
     }
 
     public static Connection getConnect() {
-        Connection connection;
 //        Properties properties = new Properties(); // Возможность менять базу данных
 
 //      Читаем properties и устанавливаем соединение
-        try {
-            connection = DriverManager.getConnection(JDBCProp.getURL(), JDBCProp.getUSER(), JDBCProp.getPSWD());
+        try (Connection connection = DriverManager.getConnection(JDBCProp.getURL(), JDBCProp.getUSER(), JDBCProp.getPSWD())){
+
 //            InputStream input = new FileInputStream("src/main/java/jm/task/core/jdbc/util/Hibernate.properties");
 //            properties.load(input);
 
 //            url = properties.getProperty("hibernate.connection.url");
 //            user = properties.getProperty("hibernate.connection.username");
 //            pswd = properties.getProperty("hibernate.connection.password");
-
             return connection;
         } catch (SQLException e) {
-            System.out.println("Не удалось установить подключение к базе данных");
-            return null;
+            throw new RuntimeException("Не удалось установить подключение к базе данных");
         }
     }
 }
