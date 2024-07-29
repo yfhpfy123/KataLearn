@@ -17,12 +17,11 @@ public class Util {
     }
 
     public static Connection getConnect() {
-        Connection connection;
 //        Properties properties = new Properties(); // Возможность менять базу данных
 
 //      Читаем properties и устанавливаем соединение
-        try {
-            connection = DriverManager.getConnection(JDBCProp.getURL(), JDBCProp.getUSER(), JDBCProp.getPSWD());
+        try (Connection connection = DriverManager.getConnection(JDBCProp.getURL(), JDBCProp.getUSER(), JDBCProp.getPSWD())){
+
 //            InputStream input = new FileInputStream("src/main/java/jm/task/core/jdbc/util/Hibernate.properties");
 //            properties.load(input);
 
@@ -32,8 +31,7 @@ public class Util {
 
             return connection;
         } catch (SQLException e) {
-            System.out.println("Не удалось установить подключение к базе данных");
-            return null;
+            throw new RuntimeException("Не удалось установить подключение к базе данных");
         }
     }
 }
